@@ -1,0 +1,141 @@
+<ng-container *ngIf="studentDetails">
+  <p-dialog
+    header="Student Profile"
+    [(visible)]="modalDisplay"
+    [baseZIndex]="10000"
+    [breakpoints]="{ '960px': '75vw' }"
+  >
+    <!-- [style]="{ height: '50vw' }" -->
+    <div class="flex flex-column justify-content-center">
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+        <div class="field mb-3">
+          <label for="Name"><strong>Name: </strong></label><br />
+          <input
+            pInputText
+            type="text"
+            class="form-control"
+            name="Name"
+            id="Name"
+            formControlName="Name"
+            required
+          />
+          <!-- Error Message -->
+          <ng-container
+            *ngIf="
+              (submitted && f['Name']?.errors) ||
+              (f['Name']?.errors && f['Name']?.dirty)
+            "
+          >
+            <div
+              *ngIf="f['Name']?.errors?.['required']"
+              class="flex justify-content-center mt-3"
+            >
+              <p-message severity="error" text="Name is required"></p-message>
+            </div>
+          </ng-container>
+        </div>
+        <div class="field mb-3">
+          <label for="PhoneNumber"><strong>Phone Number: </strong></label><br />
+          <input
+            pInputText
+            type="text"
+            class="form-control"
+            name="PhoneNumber"
+            id="PhoneNumber"
+            formControlName="PhoneNumber"
+            required
+          />
+          <!-- Error Message -->
+          <ng-container
+            *ngIf="
+              (submitted && f['PhoneNumber']?.errors) ||
+              (f['PhoneNumber']?.errors && f['PhoneNumber']?.dirty)
+            "
+          >
+            <div
+              *ngIf="f['PhoneNumber']?.errors?.['required']"
+              class="flex justify-content-center mt-3"
+            >
+              <p-message
+                severity="error"
+                text="Phone Number is required"
+              ></p-message>
+            </div>
+          </ng-container>
+        </div>
+        <div class="p-field mb-3">
+          <!-- <strong>New Profile Image:  -->
+
+          <!-- </strong> {{ uploadedFilename }}</label> -->
+          <p-fileUpload
+            #imageUpload
+            name="profileImage"
+            accept="image/*"
+            [showUploadButton]="false"
+            [maxFileSize]="1000000"
+            [fileLimit]="1"
+            [customUpload]="true"
+            (onSelect)="myUploader($event)"
+            (onClear)="onProfileImageClear($event)"
+            (onRemove)="onProfileImageClear($event)"
+            styleClass="mt-1"
+          ></p-fileUpload>
+        </div>
+        <div class="flex justify-content-end mt-3">
+          <div>
+            <p-button              
+              type="submit"
+              [disabled]="!profileForm.valid"
+              styleClass="p-button p-button-help"
+              label="Update"
+            >              
+            </p-button>
+          </div>
+        </div>
+      </form>
+    </div>
+  </p-dialog>
+  <div class="grid">
+    <div class="col-12 md:col-6 md:col-offset-3">
+      <p-panel header="Student Profile">
+        <ng-container *ngIf="profileImage">
+          <div class="flex justify-content-center mb-2">
+            <p-image
+              [src]="profileImage"
+              alt="Image"
+              height="200"
+              width="200"
+              styleClass="profile-image"
+            ></p-image>
+          </div>
+        </ng-container>
+        <p-card styleClass="user-profile-card">
+          <ng-template pTemplate="header" styleClass="mb-2">
+            <button
+              pButton
+              type="button"
+              label="Edit Student Profile"
+              class="p-button-raised p-button-rounded p-button-sm p-button-outlined"
+              (click)="showModal()"
+            ></button>
+          </ng-template>
+          <div class="user-profile-detail py-2">
+            <strong>Name: {{ studentDetails?.Name?.S || studentDetails?.Name }}</strong>
+          </div>
+          <p-divider></p-divider>
+          <div class="user-profile-detail py-2">
+            <strong>Email: {{ studentDetails?.Email?.S || studentDetails?.Email }}</strong>
+          </div>
+          <ng-container *ngIf="studentDetails?.PhoneNumber?.S">
+            <p-divider></p-divider>
+            <div class="user-profile-detail py-2">
+              <strong
+                >Phone Number: {{ studentDetails?.PhoneNumber?.S || studentDetails?.PhoneNumber }}</strong
+              >
+            </div>
+          </ng-container>
+        </p-card>
+      </p-panel>
+    </div>
+  </div>
+</ng-container>

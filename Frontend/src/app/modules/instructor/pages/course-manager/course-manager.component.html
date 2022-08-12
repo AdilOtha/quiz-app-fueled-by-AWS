@@ -1,0 +1,94 @@
+<!-- Delete Quiz Modal -->
+<p-dialog
+  header="Delete Quiz"
+  [(visible)]="displayDeleteQuizModal"
+  [breakpoints]="{ '960px': '75vw' }"
+  [style]="{ width: '30vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="cancelDeleteQuiz()"
+>
+  <p>Are you sure you want to delete this Quiz?</p>
+  <ng-template pTemplate="footer">
+    <p-button
+      type="button"
+      label="Confirm Delete"
+      styleClass="p-button-text p-button-danger"
+      (click)="confirmDeleteQuiz()"
+    ></p-button>
+    <p-button
+      (click)="cancelDeleteQuiz()"
+      label="No"
+      styleClass="p-button p-button-primary"
+    ></p-button>
+  </ng-template>
+</p-dialog>
+<p-tabView>
+  <p-tabPanel header="Course Details">
+    <ng-container *ngIf="courseDetails">
+      <div class="flex flex-column">
+        <h2>{{ courseDetails?.courseName }}</h2>
+        <p class="mb-0"><strong>Description: </strong></p>
+        <p>{{ courseDetails?.description }}</p>
+      </div>
+    </ng-container>
+  </p-tabPanel>
+  <p-tabPanel header="Enrolled Students">
+    <ng-container
+      *ngIf="enrolledStudents.length > 0; else noEnrolledStudentsTemplate"
+    >
+      <p-dataView [value]="enrolledStudents">
+        <ng-template let-student pTemplate="listItem">
+          <div class="col-12">
+            <div class="product-list-item">
+              <div class="product-list-detail">
+                <div class="product-name">{{ student?.Name?.S }}</div>
+              </div>
+              <div class="product-list-action">
+                <p-button
+                  icon="pi pi-info-circle"
+                  styleClass="p-button-rounded p-button-raised p-button-primary"
+                  [routerLink]="['/instructor/student-report', student?.StudentId?.S]"
+                  [queryParams]="{ courseId: courseDetails?.courseId }"
+                ></p-button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </ng-container>
+    <ng-template #noEnrolledStudentsTemplate>
+      <p-message severity="info" text="No Enrolled Students"></p-message>
+    </ng-template>
+  </p-tabPanel>
+  <p-tabPanel header="Quizzes">
+    <ng-container *ngIf="quizzes.length > 0; else noPostedQuizzesTemplate">
+      <p-dataView [value]="quizzes">
+        <ng-template let-quiz pTemplate="listItem">
+          <div class="col-12">
+            <div class="product-list-item">
+              <div class="product-list-detail">
+                <div class="product-name">{{ quiz?.quizName }}</div>
+              </div>
+              <div class="product-list-action">
+                <p-button
+                  icon="pi pi-pencil"
+                  styleClass="p-button-rounded p-button-raised p-button-warning mr-2"
+                  [routerLink]="['/instructor/quiz-creator', quiz?.quizId]"
+                ></p-button>
+                <p-button
+                  icon="pi pi-trash"
+                  styleClass="p-button-rounded p-button-raised p-button-danger"
+                  (click)="selectQuizForDeletion(quiz?.quizId)"
+                ></p-button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </p-dataView>
+    </ng-container>
+    <ng-template #noPostedQuizzesTemplate>
+      <p-message severity="info" text="No Posted Quizzes"></p-message>
+    </ng-template>
+  </p-tabPanel>
+</p-tabView>

@@ -1,0 +1,33 @@
+service: csci5409-s22-group16-backend
+plugins:
+  - serverless-dotenv-plugin
+provider:
+  name: aws
+  runtime: nodejs14.x
+  stage: dev
+  region: us-east-1
+functions:
+  instructor:
+    handler: src/app.handler
+    events:
+      - httpApi:
+          path: /instructor/{any+}
+          method: ANY
+  student:
+    handler: src/app.handler
+    events: 
+      - httpApi:
+          path: /student/{any+}
+          method: ANY        
+  course:
+    handler: src/app.handler
+    events: 
+      - httpApi:
+          path: /course/{any+}
+          method: ANY
+  quiz:
+    handler: src/app.handler
+    events: 
+      - httpApi:
+          path: /quiz/{any+}
+          method: ANY

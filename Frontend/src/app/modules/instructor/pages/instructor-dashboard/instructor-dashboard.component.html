@@ -1,0 +1,145 @@
+<p-dialog
+  header="Delete Course"
+  [(visible)]="displayDeleteModal"
+  [breakpoints]="{ '960px': '75vw' }"
+  [style]="{ width: '30vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  (onHide)="cancelUpdateCourse()"
+>
+  <p>Are you sure you want to delete this course?</p>
+  <ng-template pTemplate="footer">
+    <p-button
+      type="button"
+      label="Confirm Delete"
+      styleClass="p-button-text p-button-danger"
+      (click)="confirmDeleteCourse()"
+    ></p-button>
+    <p-button
+      (click)="cancelUpdateCourse()"
+      label="No"
+      styleClass="p-button p-button-primary"
+    ></p-button>
+  </ng-template>
+</p-dialog>
+<p-dialog
+  header="Update Course"
+  [(visible)]="displayModal"
+  [breakpoints]="{ '960px': '75vw' }"
+  [style]="{ width: '50vw' }"
+  [draggable]="false"
+  [resizable]="false"
+  [maximizable]="true"
+  (onHide)="cancelUpdateCourse()"
+>
+  <form
+    [formGroup]="courseForm"
+    id="courseForm"
+    (ngSubmit)="submitUpdateCourseForm()"
+  >
+    <div class="field">
+      <label for="course-name">Course Name</label>
+      <input
+        id="course-name"
+        formControlName="courseName"
+        type="text"
+        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      />
+    </div>
+    <!-- Error Message -->
+    <ng-container
+      *ngIf="
+        (formSubmitted && formControl['courseName']?.errors) ||
+        (formControl['courseName']?.errors && formControl['courseName']?.dirty)
+      "
+    >
+      <div
+        *ngIf="formControl['courseName']?.errors?.['required']"
+        class="flex justify-content-start mt-3"
+      >
+        <p-message severity="error" text="Course Name is required"></p-message>
+      </div>
+    </ng-container>
+    <div class="field">
+      <label for="description">Description</label>
+      <textarea
+        id="description"
+        formControlName="description"
+        class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+      ></textarea>
+    </div>
+    <!-- Error Message -->
+    <ng-container
+      *ngIf="
+        (formSubmitted && formControl['description']?.errors) ||
+        (formControl['description']?.errors &&
+          formControl['description']?.dirty)
+      "
+    >
+      <div
+        *ngIf="formControl['description']?.errors?.['description']"
+        class="flex justify-content-start mt-3"
+      >
+        <p-message severity="error" text="Description is required"></p-message>
+      </div>
+    </ng-container>
+  </form>
+  <ng-template pTemplate="footer">
+    <button
+      pButton
+      type="submit"
+      form="courseForm"
+      label="Update"
+      class="p-button-text"
+    ></button>
+    <p-button
+      (click)="cancelUpdateCourse()"
+      label="Cancel"
+      styleClass="p-button-text p-button-danger"
+    ></p-button>
+  </ng-template>
+</p-dialog>
+<p-panel header="Instructor Dashboard" styleClass="dashboard">
+  <div class="flex justify-content-end mb-3">
+    <!-- Add Course Button -->
+    <p-button
+      label="Add Course"
+      type="button"
+      icon="pi pi-plus"
+      styleClass="p-button-raised p-button-help"
+      (click)="displayModal = true"
+    ></p-button>
+  </div>
+  <div class="grid">
+    <ng-container *ngFor="let course of courses">
+      <div class="col-12 sm:col-6 lg:col-6 xl:col-3">
+        <p-card styleClass="course-card">
+          <div class="flex justify-content-between align-items-center">
+            <p class="text-2xl font-semibold">{{ course?.courseName }}</p>
+            <div>
+              <p-button
+                styleClass="p-button-primary p-button-raised p-button-rounded mr-2"
+                icon="pi pi-info-circle"
+                [routerLink]="['/instructor/course', course.courseId]"
+              >
+              </p-button>
+              <button
+                pButton
+                pRipple
+                type="button"
+                (click)="selectCourse(course?.courseId)"
+                class="p-button-raised p-button-rounded p-button-warning mr-2"
+                icon="pi pi-pencil"
+              ></button>
+              <p-button
+                styleClass="p-button-danger p-button-raised p-button-rounded"
+                (click)="selectCourseForDeletion(course?.courseId)"
+                icon="pi pi-trash"
+              ></p-button>
+            </div>
+          </div>
+        </p-card>
+      </div>
+    </ng-container>
+  </div>
+</p-panel>

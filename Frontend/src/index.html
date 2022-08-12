@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>CSCI5409-Group16</title>
+    <base href="/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
+    <!--Script for deploying Lex web ui-->
+    <script src="https://d2wlr03bvyy5dt.cloudfront.net/lex-web-ui-loader.min.js"></script>
+    <script>
+      var loaderOpts = {
+        baseUrl: 'https://d2wlr03bvyy5dt.cloudfront.net/',
+        shouldLoadMinDeps: true
+      };
+      var loader = new ChatBotUiLoader.IframeLoader(loaderOpts);
+      var chatbotUiConfig = {
+        /* Example of setting session attributes on parent page
+        lex: {
+          sessionAttributes: {
+            userAgent: navigator.userAgent,
+            QNAClientFilter: ''
+          }
+        }
+        */
+      };
+      loader.load(chatbotUiConfig)
+        .catch(function (error) { console.error(error); });
+    </script>
+
+  </head>
+  <body>
+    <app-root></app-root>
+  </body>
+</html>

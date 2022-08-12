@@ -1,0 +1,16 @@
+:host ::ng-deep {
+    .login-header-card {
+        .p-card-title{
+            display: none;
+        }
+        .p-card-body{
+            padding: 0;
+        }
+    }
+
+    .login-form-card {
+        .p-card-title {
+            text-align: center !important;
+        }
+    }
+}

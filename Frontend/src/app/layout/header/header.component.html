@@ -1,0 +1,8 @@
+<p-menubar [model]="items">
+    <ng-template pTemplate="end">
+      <button pButton class="p-button-raised p-button-rounded" icon="pi pi-user" (click)="menu.toggle($event)">
+      </button>
+      <p-menu #menu id="config_menu" [model]="avatarMenuItems" [popup]="true"></p-menu>
+    </ng-template>
+  </p-menubar>
+  

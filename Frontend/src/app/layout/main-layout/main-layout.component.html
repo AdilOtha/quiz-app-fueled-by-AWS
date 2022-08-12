@@ -1,0 +1,22 @@
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="line-scale-pulse-out"
+  [fullScreen]="true"
+></ngx-spinner>
+<div class="flex-container">
+  <app-header *ngIf="showHeader"></app-header>
+  <!-- <div class="grid justify-content-center">
+    <div class="col-4">
+      <p-card *ngIf="userDetails !== null">
+        <h3>Welcome, {{ userDetails?.name }}</h3>
+        <p>Email: {{ userDetails?.email }}</p>
+        <p>Role: {{ userDetails?.role }}</p>
+        <p>Phone No.: {{ userDetails?.phone_number }}</p>
+      </p-card>
+    </div>
+  </div> -->
+  <router-outlet style="display: none"></router-outlet>
+  <app-footer></app-footer>
+</div>

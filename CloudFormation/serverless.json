@@ -1,0 +1,533 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "The AWS CloudFormation template for this Serverless application",
+  "Resources": {    
+    "ServerlessDeploymentBucketPolicy": {
+      "Type": "AWS::S3::BucketPolicy",
+      "Properties": {
+        "Bucket": "csci5409-s22-group16-serverless-deployment-bucket",
+        "PolicyDocument": {
+          "Statement": [
+            {
+              "Action": "s3:*",
+              "Effect": "Deny",
+              "Principal": "*",
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      { "Ref": "AWS::Partition" },
+                      ":s3:::",
+                      "csci5409-s22-group16-serverless-deployment-bucket",
+                      "/*"
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:",
+                      { "Ref": "AWS::Partition" },
+                      ":s3:::",
+                      "csci5409-s22-group16-serverless-deployment-bucket"
+                    ]
+                  ]
+                }
+              ],
+              "Condition": { "Bool": { "aws:SecureTransport": false } }
+            }
+          ]
+        }
+      }
+    },
+    "InstructorLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/csci5409-s22-group16-backend-dev-instructor"
+      }
+    },
+    "StudentLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/csci5409-s22-group16-backend-dev-student"
+      }
+    },
+    "CourseLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/csci5409-s22-group16-backend-dev-course"
+      }
+    },
+    "QuizLogGroup": {
+      "Type": "AWS::Logs::LogGroup",
+      "Properties": {
+        "LogGroupName": "/aws/lambda/csci5409-s22-group16-backend-dev-quiz"
+      }
+    },
+    "IamRoleLambdaExecution": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": { "Service": ["lambda.amazonaws.com"] },
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Policies": [
+          {
+            "PolicyName": {
+              "Fn::Join": [
+                "-",
+                ["csci5409-s22-group16-backend", "dev", "lambda"]
+              ]
+            },
+            "PolicyDocument": {
+              "Version": "2012-10-17",
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": ["logs:CreateLogStream", "logs:CreateLogGroup"],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/csci5409-s22-group16-backend-dev*:*"
+                    }
+                  ]
+                },
+                {
+                  "Effect": "Allow",
+                  "Action": ["logs:PutLogEvents"],
+                  "Resource": [
+                    {
+                      "Fn::Sub": "arn:${AWS::Partition}:logs:${AWS::Region}:${AWS::AccountId}:log-group:/aws/lambda/csci5409-s22-group16-backend-dev*:*:*"
+                    }
+                  ]
+                }
+              ]
+            }
+          }
+        ],
+        "Path": "/",
+        "RoleName": {
+          "Fn::Join": [
+            "-",
+            [
+              "csci5409-s22-group16-backend",
+              "dev",
+              { "Ref": "AWS::Region" },
+              "lambdaRole"
+            ]
+          ]
+        }
+      }
+    },
+    "InstructorLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "csci5409-s22-group16-serverless-deployment-bucket",
+          "S3Key": "serverless/csci5409-s22-group16-backend/dev/1658854876592-2022-07-26T17:01:16.592Z/csci5409-s22-group16-backend.zip"
+        },
+        "Handler": "src/app.handler",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "csci5409-s22-group16-backend-dev-instructor",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "COGNITO_USER_POOL_ID": "us-east-1_k4k6WoFY1",
+            "COGNITO_APP_CLIENT_ID": "3n4f5qj6ahauins5fnver12466",
+            "SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:222799461289:csci5409-s22-group16-quiz-report",
+            "S3_BUCKET_STUDENT_PROFILE_IMAGES": "student-profile-images-g16"
+          }
+        },
+        "Role": { "Fn::GetAtt": ["IamRoleLambdaExecution", "Arn"] }
+      },
+      "DependsOn": ["InstructorLogGroup"]
+    },
+    "StudentLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "csci5409-s22-group16-serverless-deployment-bucket",
+          "S3Key": "serverless/csci5409-s22-group16-backend/dev/1658854876592-2022-07-26T17:01:16.592Z/csci5409-s22-group16-backend.zip"
+        },
+        "Handler": "src/app.handler",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "csci5409-s22-group16-backend-dev-student",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "COGNITO_USER_POOL_ID": "us-east-1_k4k6WoFY1",
+            "COGNITO_APP_CLIENT_ID": "3n4f5qj6ahauins5fnver12466",
+            "SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:222799461289:csci5409-s22-group16-quiz-report",
+            "S3_BUCKET_STUDENT_PROFILE_IMAGES": "student-profile-images-g16"
+          }
+        },
+        "Role": { "Fn::GetAtt": ["IamRoleLambdaExecution", "Arn"] }
+      },
+      "DependsOn": ["StudentLogGroup"]
+    },
+    "CourseLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "csci5409-s22-group16-serverless-deployment-bucket",
+          "S3Key": "serverless/csci5409-s22-group16-backend/dev/1658854876592-2022-07-26T17:01:16.592Z/csci5409-s22-group16-backend.zip"
+        },
+        "Handler": "src/app.handler",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "csci5409-s22-group16-backend-dev-course",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "COGNITO_USER_POOL_ID": "us-east-1_k4k6WoFY1",
+            "COGNITO_APP_CLIENT_ID": "3n4f5qj6ahauins5fnver12466",
+            "SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:222799461289:csci5409-s22-group16-quiz-report",
+            "S3_BUCKET_STUDENT_PROFILE_IMAGES": "student-profile-images-g16"
+          }
+        },
+        "Role": { "Fn::GetAtt": ["IamRoleLambdaExecution", "Arn"] }
+      },
+      "DependsOn": ["CourseLogGroup"]
+    },
+    "QuizLambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Properties": {
+        "Code": {
+          "S3Bucket": "csci5409-s22-group16-serverless-deployment-bucket",
+          "S3Key": "serverless/csci5409-s22-group16-backend/dev/1658854876592-2022-07-26T17:01:16.592Z/csci5409-s22-group16-backend.zip"
+        },
+        "Handler": "src/app.handler",
+        "Runtime": "nodejs14.x",
+        "FunctionName": "csci5409-s22-group16-backend-dev-quiz",
+        "MemorySize": 1024,
+        "Timeout": 6,
+        "Environment": {
+          "Variables": {
+            "COGNITO_USER_POOL_ID": "us-east-1_k4k6WoFY1",
+            "COGNITO_APP_CLIENT_ID": "3n4f5qj6ahauins5fnver12466",
+            "SNS_TOPIC_ARN": "arn:aws:sns:us-east-1:222799461289:csci5409-s22-group16-quiz-report",
+            "S3_BUCKET_STUDENT_PROFILE_IMAGES": "student-profile-images-g16"
+          }
+        },
+        "Role": { "Fn::GetAtt": ["IamRoleLambdaExecution", "Arn"] }
+      },
+      "DependsOn": ["QuizLogGroup"]
+    },
+    "InstructorLambdaVersionD0ZB3M5n8QqcLNALPKNUkOGuiAPOihOxz9BlsPvo": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": { "Ref": "InstructorLambdaFunction" },
+        "CodeSha256": "+Fhb8WpEBmXeqSFdA5mpSur/sjL24MpHld6V80M6ASU="
+      }
+    },
+    "StudentLambdaVersionX4spdLBs5Irfp0G0xOftjGqUnbG3qoaD76hRZcRdH8": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": { "Ref": "StudentLambdaFunction" },
+        "CodeSha256": "+Fhb8WpEBmXeqSFdA5mpSur/sjL24MpHld6V80M6ASU="
+      }
+    },
+    "CourseLambdaVersionhrjSUUELw6fBZuD1b7le7R1ouoY5o6YBkwiGjLwFPQ": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": { "Ref": "CourseLambdaFunction" },
+        "CodeSha256": "+Fhb8WpEBmXeqSFdA5mpSur/sjL24MpHld6V80M6ASU="
+      }
+    },
+    "QuizLambdaVersion3LW4m58wb85PBnz9UhiY1Qt5LQNesKFolWNCqTHRr5g": {
+      "Type": "AWS::Lambda::Version",
+      "DeletionPolicy": "Retain",
+      "Properties": {
+        "FunctionName": { "Ref": "QuizLambdaFunction" },
+        "CodeSha256": "+Fhb8WpEBmXeqSFdA5mpSur/sjL24MpHld6V80M6ASU="
+      }
+    },
+    "HttpApi": {
+      "Type": "AWS::ApiGatewayV2::Api",
+      "Properties": {
+        "Name": "dev-csci5409-s22-group16-backend",
+        "ProtocolType": "HTTP"
+      }
+    },
+    "HttpApiStage": {
+      "Type": "AWS::ApiGatewayV2::Stage",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "StageName": "$default",
+        "AutoDeploy": true,
+        "DefaultRouteSettings": { "DetailedMetricsEnabled": false }
+      }
+    },
+    "InstructorLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": { "Fn::GetAtt": ["InstructorLambdaFunction", "Arn"] },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              { "Ref": "AWS::Partition" },
+              ":execute-api:",
+              { "Ref": "AWS::Region" },
+              ":",
+              { "Ref": "AWS::AccountId" },
+              ":",
+              { "Ref": "HttpApi" },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationInstructor": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": { "Fn::GetAtt": ["InstructorLambdaFunction", "Arn"] },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteAnyInstructorAnyVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "RouteKey": "ANY /instructor/{any+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            ["integrations", { "Ref": "HttpApiIntegrationInstructor" }]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationInstructor"
+    },
+    "StudentLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": { "Fn::GetAtt": ["StudentLambdaFunction", "Arn"] },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              { "Ref": "AWS::Partition" },
+              ":execute-api:",
+              { "Ref": "AWS::Region" },
+              ":",
+              { "Ref": "AWS::AccountId" },
+              ":",
+              { "Ref": "HttpApi" },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationStudent": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": { "Fn::GetAtt": ["StudentLambdaFunction", "Arn"] },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteAnyStudentAnyVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "RouteKey": "ANY /student/{any+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            ["integrations", { "Ref": "HttpApiIntegrationStudent" }]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationStudent"
+    },
+    "CourseLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": { "Fn::GetAtt": ["CourseLambdaFunction", "Arn"] },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              { "Ref": "AWS::Partition" },
+              ":execute-api:",
+              { "Ref": "AWS::Region" },
+              ":",
+              { "Ref": "AWS::AccountId" },
+              ":",
+              { "Ref": "HttpApi" },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationCourse": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": { "Fn::GetAtt": ["CourseLambdaFunction", "Arn"] },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteAnyCourseAnyVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "RouteKey": "ANY /course/{any+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            ["integrations", { "Ref": "HttpApiIntegrationCourse" }]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationCourse"
+    },
+    "QuizLambdaPermissionHttpApi": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": { "Fn::GetAtt": ["QuizLambdaFunction", "Arn"] },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:",
+              { "Ref": "AWS::Partition" },
+              ":execute-api:",
+              { "Ref": "AWS::Region" },
+              ":",
+              { "Ref": "AWS::AccountId" },
+              ":",
+              { "Ref": "HttpApi" },
+              "/*"
+            ]
+          ]
+        }
+      }
+    },
+    "HttpApiIntegrationQuiz": {
+      "Type": "AWS::ApiGatewayV2::Integration",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "IntegrationType": "AWS_PROXY",
+        "IntegrationUri": { "Fn::GetAtt": ["QuizLambdaFunction", "Arn"] },
+        "PayloadFormatVersion": "2.0",
+        "TimeoutInMillis": 6500
+      }
+    },
+    "HttpApiRouteAnyQuizAnyVar": {
+      "Type": "AWS::ApiGatewayV2::Route",
+      "Properties": {
+        "ApiId": { "Ref": "HttpApi" },
+        "RouteKey": "ANY /quiz/{any+}",
+        "Target": {
+          "Fn::Join": [
+            "/",
+            ["integrations", { "Ref": "HttpApiIntegrationQuiz" }]
+          ]
+        }
+      },
+      "DependsOn": "HttpApiIntegrationQuiz"
+    }
+  },
+  "Outputs": {
+    "ServerlessDeploymentBucketName": {
+      "Value": "csci5409-s22-group16-serverless-deployment-bucket",
+      "Export": {
+        "Name": "sls-csci5409-s22-group16-backend-dev-ServerlessDeploymentBucketName"
+      }
+    },
+    "InstructorLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "InstructorLambdaVersionD0ZB3M5n8QqcLNALPKNUkOGuiAPOihOxz9BlsPvo"
+      },
+      "Export": {
+        "Name": "sls-csci5409-s22-group16-backend-dev-InstructorLambdaFunctionQualifiedArn"
+      }
+    },
+    "StudentLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "StudentLambdaVersionX4spdLBs5Irfp0G0xOftjGqUnbG3qoaD76hRZcRdH8"
+      },
+      "Export": {
+        "Name": "sls-csci5409-s22-group16-backend-dev-StudentLambdaFunctionQualifiedArn"
+      }
+    },
+    "CourseLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "CourseLambdaVersionhrjSUUELw6fBZuD1b7le7R1ouoY5o6YBkwiGjLwFPQ"
+      },
+      "Export": {
+        "Name": "sls-csci5409-s22-group16-backend-dev-CourseLambdaFunctionQualifiedArn"
+      }
+    },
+    "QuizLambdaFunctionQualifiedArn": {
+      "Description": "Current Lambda function version",
+      "Value": {
+        "Ref": "QuizLambdaVersion3LW4m58wb85PBnz9UhiY1Qt5LQNesKFolWNCqTHRr5g"
+      },
+      "Export": {
+        "Name": "sls-csci5409-s22-group16-backend-dev-QuizLambdaFunctionQualifiedArn"
+      }
+    },
+    "HttpApiId": {
+      "Description": "Id of the HTTP API",
+      "Value": { "Ref": "HttpApi" },
+      "Export": { "Name": "sls-csci5409-s22-group16-backend-dev-HttpApiId" }
+    },
+    "HttpApiUrl": {
+      "Description": "URL of the HTTP API",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            { "Ref": "HttpApi" },
+            ".execute-api.",
+            { "Ref": "AWS::Region" },
+            ".",
+            { "Ref": "AWS::URLSuffix" }
+          ]
+        ]
+      },
+      "Export": { "Name": "sls-csci5409-s22-group16-backend-dev-HttpApiUrl" }
+    }
+  }
+}

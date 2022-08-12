@@ -1,0 +1,307 @@
+<div class="grid justify-content-center">
+  <div class="col-12 md:col-8">
+    <p-panel header="Quiz Creator" styleClass="dashboard">
+      <ng-container *ngFor="let question of questionList">
+        <ng-container [ngSwitch]="question?.questionType">
+          <ng-container *ngSwitchCase="questionTypes.MULTIPLE_CHOICE">
+            <p-fieldset legend="Multiple Choice Question" styleClass="mb-3">
+              <div class="field">
+                <label>Question</label>
+                <input
+                  type="text"
+                  [(ngModel)]="question.question"
+                  class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                />
+              </div>
+              <div class="field">
+                <label>Options (press enter to add options)</label> <br />
+                <p-chips [(ngModel)]="question.options"></p-chips>
+              </div>
+              <div class="field">
+                <label>Correct Answer</label> <br />
+                <p-dropdown
+                  [options]="getOptions(question.options)"
+                  [(ngModel)]="question.answer"
+                  optionLabel="value"
+                  optionValue="value"
+                ></p-dropdown>
+              </div>
+              <div class="field">
+                <label>Marks</label> <br />
+                <p-inputNumber
+                  [(ngModel)]="question.marks"
+                  placeholder="Marks"
+                  mode="decimal"
+                  [step]="1"
+                  [min]="1"
+                  [max]="100"
+                  [showButtons]="true"
+                  suffix=" mark(s)"
+                ></p-inputNumber>
+              </div>
+              <div class="flex justify-content-end">
+                <p-button
+                  styleClass="p-button-outlined p-button-rounded p-button-danger"
+                  icon="pi pi-times-circle"
+                  (click)="deleteQuestion(question?.questionId)"
+                >
+                </p-button>
+              </div>
+            </p-fieldset>
+          </ng-container>
+          <ng-container *ngSwitchCase="questionTypes.MULTI_SELECT">
+            <p-fieldset legend="Multi-Select Question" styleClass="mb-3">
+              <div class="field">
+                <label>Question</label>
+                <input
+                  type="text"
+                  [(ngModel)]="question.question"
+                  class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                />
+              </div>
+              <div class="field">
+                <label>Options (press enter to add options)</label> <br />
+                <p-chips [(ngModel)]="question.options"></p-chips>
+              </div>
+              <div class="field">
+                <label>Correct Answers</label> <br />
+                <p-multiSelect
+                  [options]="getOptions(question.options)"
+                  [(ngModel)]="question.answer"
+                  optionLabel="value"
+                  optionValue="value"
+                >
+                </p-multiSelect>
+              </div>
+              <div class="field">
+                <label>Marks</label> <br />
+                <p-inputNumber
+                  [(ngModel)]="question.marks"
+                  placeholder="Marks"
+                  mode="decimal"
+                  [step]="1"
+                  [min]="1"
+                  [max]="100"
+                  [showButtons]="true"
+                  suffix=" mark(s)"
+                ></p-inputNumber>
+              </div>
+              <div class="flex justify-content-end">
+                <p-button
+                  styleClass="p-button-outlined p-button-rounded p-button-danger"
+                  icon="pi pi-times-circle"
+                  (click)="deleteQuestion(question?.questionId)"
+                >
+                </p-button>
+              </div>
+            </p-fieldset>
+          </ng-container>
+          <ng-container *ngSwitchCase="questionTypes.TRUE_FALSE">
+            <p-fieldset legend="True/False" styleClass="mb-3">
+              <div class="field">
+                <label>Question</label>
+                <input
+                  type="text"
+                  [(ngModel)]="question.question"
+                  class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+                />
+              </div>
+              <div class="field">
+                <label>Correct Answer</label> <br />
+                <p-dropdown
+                  [options]="trueFalseOptions"
+                  [(ngModel)]="question.answer"
+                  optionLabel="label"
+                  optionValue="value"
+                ></p-dropdown>
+              </div>
+              <div class="field">
+                <label>Marks</label> <br />
+                <p-inputNumber
+                  [(ngModel)]="question.marks"
+                  placeholder="Marks"
+                  mode="decimal"
+                  [step]="1"
+                  [min]="1"
+                  [max]="100"
+                  [showButtons]="true"
+                  suffix=" mark(s)"
+                ></p-inputNumber>
+              </div>
+              <div class="flex justify-content-end">
+                <p-button
+                  styleClass="p-button-outlined p-button-rounded p-button-danger"
+                  icon="pi pi-times-circle"
+                  (click)="deleteQuestion(question?.questionId)"
+                >
+                </p-button>
+              </div>
+            </p-fieldset>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <div class="flex justify-content-evenly align-items-end mb-4">
+        <div class="field">
+          <label for="selectedQuestionType">Question Type:</label><br />
+          <p-dropdown
+            id="selectedQuestionType"
+            [options]="questionTypesList"
+            [(ngModel)]="selectedQuestionType"
+            optionLabel="value"
+            optionValue="key"
+          ></p-dropdown>
+        </div>
+        <div class="field">
+          <p-button
+            type="button"
+            styleClass="p-button-raised mr-2"
+            icon="pi pi-plus"
+            label="Add Question"
+            (click)="addQuestion()"
+          ></p-button>
+        </div>
+      </div>
+
+      <form
+        [formGroup]="quizForm"
+        id="quizForm"
+        class="mb-3"
+        (ngSubmit)="submitQuizData()"
+      >
+        <div class="grid flex justify-content-evenly align-items-end">
+          <div class="field">
+            <label for="quizName">Quiz Name:</label><br />
+            <input
+              id="quizName"
+              type="text"
+              placeholder="Quiz Name"
+              formControlName="quizName"
+              pInputText
+            />
+            <ng-container
+              *ngIf="
+                (formSubmitted && formControl['quizName']?.errors) ||
+                (formControl['quizName']?.errors &&
+                  formControl['quizName']?.dirty)
+              "
+            >
+              <div
+                *ngIf="formControl['quizName']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Quiz Name is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="selectedCourse">Course:</label><br />
+            <p-dropdown
+              [options]="courses"
+              id="selectedCourse"
+              formControlName="selectedCourse"
+              optionLabel="courseName"
+              optionValue="courseId"
+            ></p-dropdown>
+            <ng-container
+              *ngIf="
+                (formSubmitted && formControl['selectedCourse']?.errors) ||
+                (formControl['selectedCourse']?.errors &&
+                  formControl['selectedCourse']?.dirty)
+              "
+            >
+              <div
+                *ngIf="formControl['selectedCourse']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Please select a course"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <!-- Input box for Time Limit -->
+          <div class="field">
+            <label for="timeLimit">Time Limit:</label><br />
+            <p-inputNumber
+              id="timeLimit"
+              formControlName="timeLimit"
+              placeholder="Time Limit"
+              mode="decimal"
+              [step]="5"
+              [min]="5"
+              [max]="1000"
+              [showButtons]="true"
+              [allowEmpty]="true"
+              suffix=" minutes"
+            ></p-inputNumber>
+            <ng-container
+              *ngIf="
+                (formSubmitted && formControl['timeLimit']?.errors) ||
+                (formControl['timeLimit']?.errors &&
+                  formControl['timeLimit']?.dirty)
+              "
+            >
+              <div
+                *ngIf="formControl['timeLimit']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Time Limit is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="totalMarks">Total Marks:</label><br />
+            <!-- Disabled Input Field for Total Marks -->
+            <input
+              id="totalMarks"
+              type="number"
+              placeholder="Total Marks"
+              value="{{ getTotalMarks() }}"
+              disabled
+              pInputText
+            />
+          </div>
+          <div class="field">
+            <label for="quizStatus">Status:</label><br />
+            <p-dropdown
+              [options]="quizStatusList"
+              id="quizStatus"
+              formControlName="quizStatus"
+              optionLabel="key"
+              optionValue="value"
+            ></p-dropdown>
+          </div>
+          <ng-container *ngIf="isEditMode">
+            <div class="field">
+              <p-button
+                type="button"
+                styleClass="p-button-raised p-button-warning"
+                icon="pi pi-angle-left"
+                label="Cancel"
+                [routerLink]="[
+                  '/instructor/course',
+                  formControl['selectedCourse']?.value
+                ]"
+              ></p-button>
+            </div>
+          </ng-container>
+          <div class="field">
+            <p-button
+              type="submit"
+              styleClass="p-button-raised p-button-help"
+              icon="pi pi-check"
+              [label]="isEditMode ? 'Update' : 'Create'"
+            ></p-button>
+          </div>
+        </div>
+      </form>
+    </p-panel>
+  </div>
+</div>

@@ -1,0 +1,46 @@
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="line-scale-pulse-out"
+  [fullScreen]="true"
+></ngx-spinner>
+<div class="grid justify-content-center align-content-center h-full">
+  <div class="col-12 sm:col-6 md:col-4">
+    <p-panel header="Confirm Registration">
+      <form
+        [formGroup]="confirmRegistrationForm"
+        (ngSubmit)="submitForm()"
+      >
+        <div class="field">
+          <label for="code">Verification Code</label>
+          <input
+            id="code"
+            formControlName="verificationCode"
+            required
+            type="number"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+          <!-- Error Message -->
+          <ng-container
+            *ngIf="
+              (formSubmitted && form['verificationCode']?.errors) ||
+              (form['verificationCode']?.errors && form['name']?.dirty)
+            "
+          >
+            <div
+              *ngIf="form['verificationCode']?.errors?.['required']"
+              class="flex justify-content-start mt-3"
+            >
+              <p-message
+                severity="error"
+                text="Verification Code is required"
+              ></p-message>
+            </div>
+          </ng-container>
+        </div>
+        <button pButton pRipple type="submit" label="Send"></button>
+      </form>
+    </p-panel>
+  </div>
+</div>

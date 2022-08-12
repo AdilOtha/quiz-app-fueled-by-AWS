@@ -1,0 +1,177 @@
+{
+  "Resources": {
+    "MySNSTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": "csci5409-s22-group16-quiz-report-test"
+      }
+    },
+    "ECSCluster": {
+      "Type": "AWS::ECS::Cluster",
+      "Properties": {
+        "ClusterName": "csci5409-s22-group16-cluster-test",
+        "CapacityProviders": ["FARGATE", "FARGATE_SPOT"],
+        "DefaultCapacityProviderStrategy": [
+          {
+            "CapacityProvider": "FARGATE",
+            "Weight": 1
+          },
+          {
+            "CapacityProvider": "FARGATE_SPOT",
+            "Weight": 1
+          }
+        ]
+      }
+    },
+    "ECSTaskDefinition": {
+      "Type": "AWS::ECS::TaskDefinition",
+      "Properties": {
+        "ContainerDefinitions": [
+          {
+            "Name": "csci5409-s22-group16-frontend",
+            "Image": "222799461289.dkr.ecr.us-east-1.amazonaws.com/csci5409-s22-group16-frontend",
+            "PortMappings": [
+              {
+                "ContainerPort": 80,
+                "HostPort": 80
+              }
+            ]
+          }
+        ],
+        "Family": "csci5409-s22-group16-task-test",
+        "RequiresCompatibilities": ["FARGATE"],
+        "NetworkMode": "awsvpc",
+        "Cpu": 256,
+        "Memory": 512,
+        "ExecutionRoleArn": "arn:aws:iam::222799461289:role/ecsTaskExecutionRole"
+      }
+    },
+    "ECSService": {
+      "Type": "AWS::ECS::Service",
+      "Properties": {
+        "Cluster": { "Ref": "ECSCluster" },
+        "DesiredCount": 1,
+        "TaskDefinition": { "Ref": "ECSTaskDefinition" },
+        "ServiceName": "csci5409-s22-group16-service-test",
+        "NetworkConfiguration": {
+          "AwsvpcConfiguration": {
+            "Subnets": ["subnet-01c05fd5dcfb0774d", "subnet-06a053ad893c2853f"],
+            "AssignPublicIp": "ENABLED"
+          }
+        }
+      }
+    },
+    "MyCognito": {
+      "Type": "AWS::Cognito::UserPool",
+      "Properties": {
+        "UserPoolName": "csci5409-s22-group16-userpool-test",
+        "LambdaConfig": {
+          "PostConfirmation": "arn:aws:lambda:us-east-1:222799461289:function:csci5409-s22-group16-cognito-post-confirmation"
+        },
+        "UsernameAttributes": ["email"],
+        "Schema": [
+          {
+            "Name": "email",
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Required": true
+          },
+          {
+            "Name": "name",
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Required": true
+          },
+          {
+            "Name": "phone_number",
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Required": false
+          },
+          {
+            "Name": "role",
+            "AttributeDataType": "String",
+            "Mutable": true,
+            "Required": false
+          }
+        ]
+      }
+    },
+    "DDBTable": {
+      "Type": "AWS::DynamoDB::Table",
+      "Properties": {
+        "TableName": "CloudFormationTestTable",
+        "AttributeDefinitions": [
+          {
+            "AttributeName": "CourseId",
+            "AttributeType": "S"
+          },
+          {
+            "AttributeName": "CourseName",
+            "AttributeType": "S"
+          }
+        ],
+        "KeySchema": [
+          {
+            "AttributeName": "CourseId",
+            "KeyType": "HASH"
+          },
+          {
+            "AttributeName": "CourseName",
+            "KeyType": "RANGE"
+          }
+        ],
+        "ProvisionedThroughput": {
+          "ReadCapacityUnits": "1",
+          "WriteCapacityUnits": "1"
+        }
+      },
+      "DependsOn": ["DynamoDBQueryPolicy"]
+    },
+    "DynamoDBQueryPolicy": {
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "DynamoDBQueryPolicy",
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": "dynamodb:Query",
+              "Resource": "*"
+            }
+          ]
+        },
+        "Roles": [
+          {
+            "Ref": "OrdersTableQueryRole"
+          }
+        ]
+      }
+    },
+    "OrdersTableQueryRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": ["dynamodb.amazonaws.com"]
+              },
+              "Action": ["sts:AssumeRole"]
+            }
+          ]
+        },
+        "Path": "/"
+      }
+    },
+    "MyS3Bucket": {
+      "Type": "AWS::S3::Bucket",
+      "Properties": {
+        "BucketName": "csci5409-s22-group16-bucket-test"
+      }
+    }
+  }
+}

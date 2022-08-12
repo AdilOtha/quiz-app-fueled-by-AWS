@@ -1,0 +1,46 @@
+<ng-container *ngIf="studentDetails">
+  <p-fieldset legend="Student Report">
+    <div class="flex flex-column justify-content-start">
+      <ng-container *ngIf="profileImage">
+        <div class="flex justify-content-start mb-2">
+          <p-image
+            [src]="profileImage"
+            alt="Image"
+            height="200"
+            width="200"
+            styleClass="profile-image"
+          ></p-image>
+        </div>
+      </ng-container>
+      <div>
+        <h3>Student Name: {{ studentDetails?.Name }}</h3>
+        <h3>Course: {{ studentDetails?.Course?.courseName }}</h3>
+      </div>
+      <p-table [value]="attemptedQuizzes" responsiveLayout="scroll">
+        <ng-template pTemplate="header">
+          <tr>
+            <th>Name</th>
+            <th>Total Marks</th>
+            <th>Obtained Marks</th>
+            <th>% Marks</th>
+          </tr>
+        </ng-template>
+        <ng-template pTemplate="body" let-quiz>
+          <tr>
+            <td>{{ quiz?.quizName }}</td>
+            <td>{{ quiz?.totalMarks }}</td>
+            <td>{{ quiz?.obtainedMarks }}</td>
+            <td>{{ (quiz?.obtainedMarks / quiz?.totalMarks) * 100 }} %</td>
+          </tr>
+        </ng-template>
+      </p-table>
+      <div>
+        <p-button
+          styleClass="p-button mt-3"
+          label="Send Report"
+          (click)="sendReport()"
+        ></p-button>
+      </div>
+    </div>
+  </p-fieldset>
+</ng-container>

@@ -1,0 +1,89 @@
+<ng-container *ngIf="quiz">
+  <p-fieldset [legend]="quiz.quizName">
+    <div class="flex flex-column">
+      <h2>Time Remaining: <countdown #cd [config]="config" (event)="handleEvent($event)"></countdown></h2>
+      <ng-container *ngFor="let question of questionList; let i = index">
+        <ng-container [ngSwitch]="question?.questionType">
+          <ng-container *ngSwitchCase="questionTypes.MULTIPLE_CHOICE">
+            <div class="multiple-choice">
+              <p>
+                {{ question.question }}
+              </p>
+              <div class="flex">
+                <div class="formgroup-inline">
+                  <ng-container *ngFor="let option of question.options">
+                    <div class="field-radiobutton">
+                      <p-radioButton
+                        [name]="question.questionId"
+                        [value]="option"
+                        [label]="option"
+                        [(ngModel)]="attemptedQuestionList[i].attemptedAnswer"
+                      ></p-radioButton>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <p-divider></p-divider>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="questionTypes.MULTI_SELECT">
+            <div class="multi-select">
+              <p>
+                {{ question.question }}
+              </p>
+              <div class="flex">
+                <div class="formgroup">
+                  <ng-container *ngFor="let option of question.options">
+                    <div class="field-checkbox">
+                      <p-checkbox
+                        [name]="question.questionId"
+                        [value]="option"
+                        [label]="option"
+                        [(ngModel)]="attemptedQuestionList[i].attemptedAnswer"
+                      ></p-checkbox>
+                    </div>
+                  </ng-container>
+                </div>
+              </div>
+              <p-divider></p-divider>
+            </div>
+          </ng-container>
+          <ng-container *ngSwitchCase="questionTypes.TRUE_FALSE">
+            <div class="true-false">
+              <p>
+                {{ question.question }}
+              </p>
+              <!-- <p-radioButton name="groupname2" value="val2"></p-radioButton> -->
+              <div class="flex">
+                <div class="formgroup">
+                  <div class="field-radiobutton">
+                    <p-radioButton
+                      [name]="question.questionId"
+                      [value]="true"
+                      label="True"
+                      [(ngModel)]="attemptedQuestionList[i].attemptedAnswer"
+                    ></p-radioButton>
+                  </div>
+                  <div class="field-radiobutton">
+                    <p-radioButton
+                      [name]="question.questionId"
+                      [value]="false"
+                      label="False"
+                      [(ngModel)]="attemptedQuestionList[i].attemptedAnswer"
+                    ></p-radioButton>
+                  </div>
+                </div>
+              </div>
+              <p-divider></p-divider>
+            </div>
+          </ng-container>
+        </ng-container>
+      </ng-container>
+      <p-button
+        label="Submit"
+        styleClass="p-button p-button-help"
+        (click)="submitQuiz()"
+      ></p-button>
+    </div>
+  </p-fieldset>
+</ng-container>

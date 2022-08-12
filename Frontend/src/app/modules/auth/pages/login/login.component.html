@@ -1,0 +1,124 @@
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="line-scale-pulse-out"
+  [fullScreen]="true"
+></ngx-spinner>
+<div class="grid justify-content-center align-content-center h-full">
+  <div class="col-12 sm:col-4">
+    <p-card header="Login" styleClass="mb-2 py-0 login-header-card">
+      <div class="text-center">
+        <h2>Welcome to the Quiz App</h2>
+      </div>
+    </p-card>
+    <p-card header="Login" styleClass="mb-2 py-0 login-form-card">
+      <form
+        [formGroup]="loginForm"
+        (ngSubmit)="submitLoginForm()"
+      >
+        <div class="field">
+          <label for="instructor-email">Email</label>
+          <input
+            id="instructor-email"
+            formControlName="email"
+            type="text"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+        </div>
+        <!-- Error Message -->
+        <ng-container
+          *ngIf="
+            (formSubmitted && formControl['email']?.errors) ||
+            (formControl['email']?.errors && formControl['email']?.dirty)
+          "
+        >
+          <div
+            *ngIf="formControl['email']?.errors?.['required']"
+            class="flex justify-content-start mt-3"
+          >
+            <p-message severity="error" text="Email is required"></p-message>
+          </div>
+          <div
+            *ngIf="formControl['email']?.errors?.['email']"
+            class="flex justify-content-start mt-3"
+          >
+            <p-message severity="error" text="Invalid email"></p-message>
+          </div>
+        </ng-container>
+        <div class="field">
+          <label for="instructor-password">Password</label>
+          <input
+            id="instructor-password"
+            formControlName="password"
+            type="password"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+        </div>
+        <!-- Error Message -->
+        <ng-container
+          *ngIf="
+            (formSubmitted && formControl['password']?.errors) ||
+            (formControl['password']?.errors &&
+              formControl['password']?.dirty)
+          "
+        >
+          <div
+            *ngIf="formControl['password']?.errors?.['required']"
+            class="flex justify-content-start mt-3"
+          >
+            <p-message severity="error" text="Password is required"></p-message>
+          </div>
+        </ng-container>
+        <div class="flex flex-column align-items-center justify-content-center">
+          <button pButton type="submit" label="Sign In"></button>
+          <p><strong>OR</strong></p>
+          <button
+            pButton
+            type="button"
+            label="Create an Account"
+            class="p-button-help"
+            [routerLink]="'/auth/register'"
+          ></button>
+        </div>
+      </form>
+    </p-card>
+    <!-- <p-tabView>
+      <p-tabPanel header="Instructor"> </p-tabPanel>
+      <p-tabPanel header="Student">
+        <div class="field">
+          <label for="email">Email</label>
+          <input
+            id="email"
+            type="text"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+        </div>
+        <div class="field">
+          <label for="confirm-password">Confirm Password</label>
+          <input
+            id="confirm-password"
+            type="password"
+            class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+          />
+        </div>
+        <div class="flex justify-content-center">
+          <button
+            pButton
+            type="button"
+            label="Sign Up"
+            class="p-button-outlined"
+          ></button>
+        </div>
+      </p-tabPanel>
+    </p-tabView> -->
+  </div>
+</div>

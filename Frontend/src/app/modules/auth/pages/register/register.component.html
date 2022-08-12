@@ -1,0 +1,401 @@
+<ngx-spinner
+  bdColor="rgba(0, 0, 0, 0.8)"
+  size="medium"
+  color="#fff"
+  type="line-scale-pulse-out"
+  [fullScreen]="true"
+></ngx-spinner>
+<div class="grid justify-content-center align-content-center h-full">
+  <div class="col-12 sm:col-6 md:col-4">
+    <p-card header="Login" styleClass="mb-2 py-0">
+      <div class="text-center">
+        <h2>Welcome to the Quiz App</h2>
+        <p>Create a new Account</p>
+      </div>
+    </p-card>
+    <p-tabView>
+      <p-tabPanel header="Instructor">
+        <form
+          [formGroup]="instructorRegisterForm"
+          (ngSubmit)="submitInstructorForm()"
+        >
+          <div class="field">
+            <label for="instructor-name">Full Name</label>
+            <input
+              id="instructor-name"
+              formControlName="name"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (instructorFormSubmitted && instructorForm['name']?.errors) ||
+                (instructorForm['name']?.errors &&
+                  instructorForm['name']?.dirty)
+              "
+            >
+              <div
+                *ngIf="instructorForm['name']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Full Name is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="instructor-email">Email</label>
+            <input
+              id="instructor-email"
+              formControlName="email"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (instructorFormSubmitted && instructorForm['email']?.errors) ||
+                (instructorForm['email']?.errors &&
+                  instructorForm['email']?.dirty)
+              "
+            >
+              <div
+                *ngIf="instructorForm['email']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Email is required"
+                ></p-message>
+              </div>
+              <div
+                *ngIf="instructorForm['email']?.errors?.['email']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message severity="error" text="Email is invalid"></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="instructor-password">Password</label>
+            <input
+              id="instructor-password"
+              formControlName="password"
+              required
+              type="password"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (instructorFormSubmitted &&
+                  instructorForm['password']?.errors) ||
+                (instructorForm['password']?.errors &&
+                  instructorForm['password']?.dirty)
+              "
+            >
+              <div
+                *ngIf="instructorForm['password']?.errors?.['required']"
+                class="flex justify-content-start my-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Password is required"
+                ></p-message>
+              </div>
+              <div
+                *ngIf="instructorForm['password']?.errors?.['minlength']"
+                class="flex justify-content-start my-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Password length should be at least 8 characters"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="instructor-confirm-password">Confirm Password</label>
+            <input
+              id="instructor-confirm-password"
+              formControlName="confirmPassword"
+              required
+              type="password"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+          </div>
+          <!-- Error Message -->
+          <ng-container
+            *ngIf="
+              (instructorFormSubmitted &&
+                instructorForm['confirmPassword']?.errors) ||
+              (instructorForm['confirmPassword']?.errors &&
+                instructorForm['confirmPassword']?.dirty)
+            "
+          >
+            <div
+              *ngIf="instructorForm['confirmPassword']?.errors?.['required']"
+              class="flex justify-content-start mt-3"
+            >
+              <p-message
+                severity="error"
+                text="Confirm Password is required"
+              ></p-message>
+            </div>
+          </ng-container>
+          <ng-container
+            *ngIf="
+            instructorRegisterForm.errors?.['passwordMatchError'] &&
+              (instructorForm['confirmPassword']?.touched ||
+              instructorForm['confirmPassword']?.dirty)
+            "
+          >
+            <div class="p-my-2">
+              <p-message
+                severity="error"
+                text="Passwords does not match"
+              ></p-message>
+            </div>
+          </ng-container>
+          <div class="field">
+            <label for="instructor-phone">Phone No.</label>
+            <input
+              id="instructor-phone"
+              formControlName="phone_number"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (instructorFormSubmitted && instructorForm['phone']?.errors) ||
+                (instructorForm['phone']?.errors &&
+                  instructorForm['phone']?.dirty)
+              "
+            >
+              <div
+                *ngIf="instructorForm['phone']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Phone No. is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div
+            class="flex flex-column align-items-center justify-content-center"
+          >
+            <button pButton pRipple type="submit" label="Sign Up as Instructor" [disabled]="instructorRegisterForm.invalid"></button>
+            <p><strong>OR</strong></p>
+            <button
+              pButton
+              type="button"
+              label="Sign in with existing account"
+              class="p-button-help"
+              [routerLink]="'/auth/login'"
+            ></button>
+          </div>
+        </form>
+      </p-tabPanel>
+      <p-tabPanel header="Student">
+        <form
+          [formGroup]="studentRegisterForm"
+          (ngSubmit)="submitStudentForm()"
+        >
+          <div class="field">
+            <label for="student-name">Full Name</label>
+            <input
+              id="student-name"
+              formControlName="name"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (studentFormSubmitted && studentForm['name']?.errors) ||
+                (studentForm['name']?.errors &&
+                studentForm['name']?.dirty)
+              "
+            >
+              <div
+                *ngIf="studentForm['name']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Full Name is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="student-email">Email</label>
+            <input
+              id="student-email"
+              formControlName="email"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (studentFormSubmitted && studentForm['email']?.errors) ||
+                (studentForm['email']?.errors &&
+                  studentForm['email']?.dirty)
+              "
+            >
+              <div
+                *ngIf="studentForm['email']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Email is required"
+                ></p-message>
+              </div>
+              <div
+                *ngIf="studentForm['email']?.errors?.['email']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message severity="error" text="Email is invalid"></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="student-password">Password</label>
+            <input
+              id="student-password"
+              formControlName="password"
+              required
+              type="password"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (studentFormSubmitted &&
+                  studentForm['password']?.errors) ||
+                (studentForm['password']?.errors &&
+                  studentForm['password']?.dirty)
+              "
+            >
+              <div
+                *ngIf="studentForm['password']?.errors?.['required']"
+                class="flex justify-content-start my-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Password is required"
+                ></p-message>
+              </div>
+              <div
+                *ngIf="studentForm['password']?.errors?.['minlength']"
+                class="flex justify-content-start my-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Password length should be at least 8 characters"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div class="field">
+            <label for="student-confirm-password">Confirm Password</label>
+            <input
+              id="student-confirm-password"
+              formControlName="confirmPassword"
+              required
+              type="password"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+          </div>
+          <!-- Error Message -->
+          <ng-container
+            *ngIf="
+              (studentFormSubmitted &&
+                studentForm['confirmPassword']?.errors) ||
+              (studentForm['confirmPassword']?.errors &&
+                studentForm['confirmPassword']?.dirty)
+            "
+          >
+            <div
+              *ngIf="studentForm['confirmPassword']?.errors?.['required']"
+              class="flex justify-content-start mt-3"
+            >
+              <p-message
+                severity="error"
+                text="Confirm Password is required"
+              ></p-message>
+            </div>
+          </ng-container>
+          <ng-container
+            *ngIf="
+            studentRegisterForm.errors?.['passwordMatchError'] &&
+              (studentForm['confirmPassword']?.touched ||
+              studentForm['confirmPassword']?.dirty)
+            "
+          >
+            <div class="p-my-2">
+              <p-message
+                severity="error"
+                text="Passwords does not match"
+              ></p-message>
+            </div>
+          </ng-container>
+          <div class="field">
+            <label for="student-phone">Phone No.</label>
+            <input
+              id="student-phone"
+              formControlName="phone_number"
+              required
+              type="text"
+              class="text-base text-color surface-overlay p-2 border-1 border-solid surface-border border-round appearance-none outline-none focus:border-primary w-full"
+            />
+            <!-- Error Message -->
+            <ng-container
+              *ngIf="
+                (studentFormSubmitted && studentForm['phone']?.errors) ||
+                (studentForm['phone']?.errors &&
+                  studentForm['phone']?.dirty)
+              "
+            >
+              <div
+                *ngIf="studentForm['phone']?.errors?.['required']"
+                class="flex justify-content-start mt-3"
+              >
+                <p-message
+                  severity="error"
+                  text="Phone No. is required"
+                ></p-message>
+              </div>
+            </ng-container>
+          </div>
+          <div
+            class="flex flex-column align-items-center justify-content-center"
+          >
+            <button pButton pRipple type="submit" class="p-button-outlined" label="Sign Up as Student" [disabled]="studentRegisterForm.invalid"  ></button>
+            <p><strong>OR</strong></p>
+            <button
+              pButton
+              type="button"
+              label="Sign in with existing account"
+              class="p-button-help p-button-outlined"
+              [routerLink]="'/auth/login'"
+            ></button>
+          </div>
+        </form>
+      </p-tabPanel>
+    </p-tabView>
+  </div>
+</div>

@@ -1,0 +1,21 @@
+# https://github.com/bvincent1/serverless-gitlab-ci/blob/master/.gitlab-ci.yml
+image: node:14.15.0-alpine
+
+stages:
+  - deploy
+
+# install build tools
+before_script:
+  - apt-get update
+  - apt-get install -y build-essential
+  - npm install -g serverless
+  - npm install -g serverless-dotenv-plugin
+  - npm install
+
+deploy_production:
+  stage: deploy
+  artifacts:
+    paths:
+      - .serverless
+  script:
+    - serverless deploy

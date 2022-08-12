@@ -1,0 +1,10 @@
+:host ::ng-deep {
+    .dashboard .p-panel-content {
+        background-color: var(--blue-100) !important;
+    }
+    .course-card {
+        .p-card-title{
+            display: none;
+        }
+    }
+}
